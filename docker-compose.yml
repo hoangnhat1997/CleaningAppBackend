@@ -1,0 +1,18 @@
+version: "3"
+services:
+  postgres:
+    container_name: cleaningapp_backend_postgres
+    image: postgres:latest
+    ports:
+    - "5432:5432"
+    volumes:
+    - /Users/nhatpham/data/postgres:/Users/nhatpham/data/postgres
+    env_file:
+    - docker.env
+    networks:
+    - postgres
+
+networks:
+  postgres:
+    driver: bridge
+  
