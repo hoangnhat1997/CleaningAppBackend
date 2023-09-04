@@ -6,6 +6,19 @@ enum UserRole {
   Supervisor
 }
 
+enum TaskType {
+  Floor
+  Door
+  Glass
+  Carpet
+}
+
+enum Floor {
+  Level1
+  Level2
+  Level3
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -17,10 +30,24 @@ datasource db {
 
 model User {
   id             String   @id @default(uuid())
-  username       String
+  username       String   @unique
   email          String   @unique
   hashedPassword String
   role           UserRole
   createdAt      DateTime @default(now())
   updateAt       DateTime @updatedAt()
+  Tasks          Task[]
+}
+
+model Task {
+  id           String   @unique
+  taskType     TaskType
+  location     String   @unique
+  floor        Floor
+  area         String
+  startTime    String
+  assignToUser User?    @relation(fields: [userId], references: [id])
+  createdAt    DateTime @default(now())
+  updateAt     DateTime @updatedAt()
+  userId       String   @unique
 }
