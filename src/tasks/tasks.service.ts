@@ -29,7 +29,7 @@ export class TasksService {
           floor: floor,
           area: area,
           startTime: startTime,
-          userId: user.id,
+          assignToUser: { connect: { id: user.id } },
         },
       });
 
@@ -43,5 +43,14 @@ export class TasksService {
       res.status(500);
       return res.send({ message: 'Failed to create a task' });
     }
+  }
+  async getTasks(req: Request) {
+    const user = req.user as { id: string; username: string };
+
+    const tasks = await this.prisma.task.findMany({
+      where: { userId: user.id },
+    });
+
+    return { tasks };
   }
 }
