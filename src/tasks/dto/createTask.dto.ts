@@ -1,4 +1,4 @@
-import { Floor, TaskType, User } from '@prisma/client';
+import { Floor, TaskType, User, File } from '@prisma/client';
 import { IsString } from 'class-validator';
 
 export class CreateTaskDto {
@@ -19,4 +19,7 @@ export class CreateTaskDto {
 
   @IsString()
   public assignToUser: string;
+
+  @IsString()
+  public image: File;
 }
