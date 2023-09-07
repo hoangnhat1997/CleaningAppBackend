@@ -13,8 +13,8 @@ import { TasksService } from './tasks.service';
 import { JwtAuthGuard } from 'src/auth/jwt.guard';
 import { CreateTaskDto } from './dto/createTask.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { storage } from '../uploads/multer.config';
-import { CreateFileDto } from 'src/uploads/dto/createFile.dto';
+// import { storage } from '../uploads/multer.config';
+// import { CreateFileDto } from 'src/uploads/dto/createFile.dto';
 
 @Controller('tasks')
 export class TasksController {
@@ -22,13 +22,19 @@ export class TasksController {
 
   @UseGuards(JwtAuthGuard)
   @Post()
-  @UseInterceptors(FileInterceptor('image', storage))
+  @UseInterceptors(FileInterceptor('image'))
   async createTask(
     @Body() dto: CreateTaskDto,
     @Response() res,
-    @UploadedFile() file: CreateFileDto,
+    @UploadedFile()
+    file: Express.Multer.File,
   ) {
-    return this.taskService.createTask(dto, res, file);
+    return this.taskService.createTask(
+      dto,
+      res,
+      file.buffer,
+      file.originalname,
+    );
   }
 
   @UseGuards(JwtAuthGuard)

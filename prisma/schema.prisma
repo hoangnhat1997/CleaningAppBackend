@@ -46,19 +46,15 @@ model Task {
   floor        Floor
   area         String
   startTime    String
+  image        String
   assignToUser User?    @relation(fields: [userId], references: [id])
-  image        File?    @relation(fields: [fileId], references: [id])
   createdAt    DateTime @default(now())
   updateAt     DateTime @updatedAt()
   userId       String
-  fileId       String
 }
 
-model File {
-  id       String   @unique @default(uuid())
+model DatabaseFile {
+  id       String @unique @default(uuid())
   filename String
-  mimetype String
-  size     Int
-  create   DateTime @default(now())
-  Task     Task[]
+  data     Bytes  @db.ByteA
 }

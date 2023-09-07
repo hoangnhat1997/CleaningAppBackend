@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable, UploadedFile } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Prisma } from '@prisma/client';
+import { DatabaseFile, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/createTask.dto';
 import { Request, Response } from 'express';
 import { FilesService } from 'src/uploads/files.service';
-import { CreateFileDto } from 'src/uploads/dto/createFile.dto';
+// import { CreateFileDto } from 'src/uploads/dto/createFile.dto';
 import path from 'path';
 
 @Injectable()
@@ -15,10 +15,14 @@ export class TasksService {
     private filesService: FilesService,
   ) {}
 
-  async createTask(dto: CreateTaskDto, res: Response, file: CreateFileDto) {
-    const image = await this.filesService.createFile(file);
+  async createTask(
+    dto: CreateTaskDto,
+    res: Response,
+    imageBuffer: Buffer,
+    filename: string,
+  ) {
+    const image = await this.filesService.createFile(imageBuffer, filename);
 
-    // Send the file using res.sendFile
     if (!image) {
       throw new BadRequestException('Upload Image Failed');
     }
@@ -42,7 +46,7 @@ export class TasksService {
           area: area,
           startTime: startTime,
           assignToUser: { connect: { id: user.id } },
-          image: { connect: { id: image.id } },
+          image: `${image.data}`,
         },
       });
 
