@@ -46,8 +46,15 @@ model Task {
   floor        Floor
   area         String
   startTime    String
+  image        String
   assignToUser User?    @relation(fields: [userId], references: [id])
   createdAt    DateTime @default(now())
   updateAt     DateTime @updatedAt()
   userId       String
+}
+
+model DatabaseFile {
+  id       String @unique @default(uuid())
+  filename String
+  data     Bytes  @db.ByteA
 }

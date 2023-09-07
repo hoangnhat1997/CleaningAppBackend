@@ -9,7 +9,7 @@ export class AuthDto {
 
   @IsNotEmpty()
   @IsString()
-  public username:string;
+  public username: string;
 
   @IsNotEmpty()
   @IsString()
@@ -18,5 +18,5 @@ export class AuthDto {
 
   @IsNotEmpty()
   @IsString()
-  public role: UserRole
+  public role: UserRole;
 }

@@ -1,15 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, UploadedFile } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Prisma } from '@prisma/client';
+import { DatabaseFile, Prisma } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateTaskDto } from './dto/createTask.dto';
 import { Request, Response } from 'express';
+import { FilesService } from 'src/uploads/files.service';
+// import { CreateFileDto } from 'src/uploads/dto/createFile.dto';
+import path from 'path';
 
 @Injectable()
 export class TasksService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private filesService: FilesService,
+  ) {}
 
-  async createTask(dto: CreateTaskDto, res: Response) {
+  async createTask(
+    dto: CreateTaskDto,
+    res: Response,
+    imageBuffer: Buffer,
+    filename: string,
+  ) {
+    const image = await this.filesService.createFile(imageBuffer, filename);
+
+    if (!image) {
+      throw new BadRequestException('Upload Image Failed');
+    }
     const { taskType, location, floor, area, startTime, assignToUser } = dto;
 
     const user = await this.prisma.user.findUnique({
@@ -30,6 +46,7 @@ export class TasksService {
           area: area,
           startTime: startTime,
           assignToUser: { connect: { id: user.id } },
+          image: `${image.data}`,
         },
       });
 
